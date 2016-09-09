@@ -1,2 +1,2 @@
 # compiladores
-Exemplos, estudo e pesquisa de compiladores
+Exemplos, estudo e pesquisa sobre compiladores
