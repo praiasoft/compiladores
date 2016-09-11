@@ -1,0 +1,149 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.17+ wizard for JavaCC 1.5.0+
+ */
+
+
+PARSER_BEGIN(EG1)
+package br.com.praiasoft.matematica;
+import java.util.List;
+import java.util.ArrayList;
+
+public class EG1
+{
+  private static List<Integer> pilha = new ArrayList<Integer>();
+  private static void soma() {
+    System.out.println("soma");
+    int a,b;
+    a = pop();
+    b = pop();
+    push(a+b);
+  }
+  
+  private static void multiplica() {
+    System.out.println("multiplica");
+    int a,b;
+    a = pop();
+    b = pop();
+    push(a*b);
+  }
+  
+  private static void subtrai() {
+    System.out.println("subtrai");
+    int a,b;
+    a = pop();
+    b = pop();
+    push(b-a);
+  }
+
+  private static void divide() {
+    System.out.println("divide");
+    int a,b;
+    a = pop();
+    b = pop();
+    push(b/a);
+  }
+  private static int pop() {
+    int temp = pilha.get(pilha.size()-1);
+    pilha.remove(pilha.size()-1);
+    return temp;
+    
+  }
+  private static void push(int temp) {
+    pilha.add(temp);
+    System.out.println("push: " + temp);
+  }
+}
+
+PARSER_END(EG1)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < TIMES : "*" >
+| < DIVIDE : "/" >
+}
+
+TOKEN :
+{
+  < NUMBER : (<DIGIT>)+  >
+| 
+  < VARIABLE : <LETTER> (< LETTER >|< DIGIT >)*  >
+|
+  < LEFT_PAREN : "(" >
+|
+  < RIGHT_PAREN : ")" >
+}
+
+TOKEN :
+{
+  <#DIGIT: ["0"-"9"]>
+| <#LETTER: ["a"-"z", "A"-"Z"]>
+}
+
+int start() :
+{
+  
+}
+{
+	{System.out.println("------------------------");}
+  
+  expressao() <EOF>
+  //e() <EOF>
+  {
+    return 0;  // returns 0 on successful parse
+  }
+}
+
+void expressao():
+{ }
+{
+termo() expressao_linha()
+}
+
+void expressao_linha(): { }
+{
+  	(
+  	    < PLUS > termo(){ soma(); } expressao_linha()
+  		| 
+  	  	< MINUS > termo(){ subtrai(); } expressao_linha()
+ 	)*
+}
+
+void termo(): { }
+{
+  	fator() termo_linha()
+}
+
+void termo_linha(): { }
+{
+	(		< TIMES > fator() { multiplica(); } termo_linha()
+		| 
+		< DIVIDE > fator() { divide(); } termo_linha()
+	)*
+}
+
+void fator() :
+{Token t;
+}
+{
+    t= < NUMBER >
+  {
+    push(Integer.parseInt(t.toString()));
+  }
+| 
+  t= < VARIABLE >  {System.out.println("matched variable: "+t);}
+|
+	< LEFT_PAREN > expressao() < RIGHT_PAREN >
+|
+	< MINUS > { push(0); } expressao() { subtrai(); }
+
+}
